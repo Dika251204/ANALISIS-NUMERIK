@@ -1,0 +1,192 @@
+#========== NOMOR 1 =========#
+import numpy as np
+def gauss_numpy(A, B):
+    A = A.astype(float)
+    B = B.astype(float)
+    n = len(B)
+
+    # Forward elimination
+    for k in range(n):
+        # Pivot exchange jika nol
+        if A[k, k] == 0:
+            for r in range(k+1, n):
+                if A[r, k] != 0:
+                    A[[k, r]] = A[[r, k]]
+                    B[k], B[r] = B[r], B[k]
+                    break
+        else:
+          for i in range(k+1, n):
+              factor = A[i, k] / A[k, k]
+              A[i, k:] -= factor * A[k, k:]
+              B[i] -= factor * B[k]
+
+
+    # Back suBstitution
+    x = np.zeros(n)
+    for i in range(n-1, -1, -1):
+        x[i] = (B[i] - np.dot(A[i, i+1:], x[i+1:])) / A[i, i]
+
+    return x
+
+# CONTOH PEMAKAIAN
+A = np.array([
+    [1, -1, 1],
+    [3, 2, -2],
+    [1, 3, 3]
+])
+
+B = np.array([0, 5, 4])
+
+solusi = gauss_numpy(A, B)
+print("Nilai A setelah eliminasi:\n", A)
+print("Nilai B setelah eliminasi:", B)
+print("Solusi")
+print("x =", solusi[0])
+print("y =", solusi[1])
+print("z =", solusi[2])
+#=====================NOMOR 2===============#
+import numpy as np
+def gauss_numpy(A, B):
+    A = A.astype(float)
+    B = B.astype(float)
+    n = len(B)
+    for k in range(n):
+        if A[k, k] == 0:
+            for r in range(k+1, n):
+                if A[r, k] != 0:
+                    A[[k, r]] = A[[r, k]]
+                    B[k], B[r] = B[r], B[k]
+                    break
+        else:
+          for i in range(k+1, n):
+              factor = A[i, k] / A[k, k]
+              A[i, k:] -= factor * A[k, k:]
+              B[i] -= factor * B[k]
+    x = np.zeros(n)
+    for i in range(n-1, -1, -1):
+        x[i] = (B[i] - np.dot(A[i, i+1:], x[i+1:])) / A[i, i]
+    return x
+A = np.array([
+    [2, 1, 1],
+    [1, 1, 1],
+    [3, -1, 2]])
+B = np.array([9,6,7])
+solusi = gauss_numpy(A, B)
+print("Nilai A setelah eliminasi:\n", A)
+print("Nilai B setelah eliminasi:", B)
+print("Solusi")
+print("x =", solusi[0])
+print("y =", solusi[1])
+print("z =", solusi[2])
+#============NOMOR 3 ==========#
+import numpy as np
+def lu_decomposition(A):
+    n = len(A)
+    L = np.zeros((n, n), float)
+    U = np.zeros((n, n), float)
+    U[:, :] = A.copy()
+    for i in range(n):
+        L[i][i] = 1
+    for k in range(n):
+        for i in range(k+1, n):
+            factor = U[i][k] / U[k][k]
+            L[i][k] = factor
+            U[i, k:] -= factor * U[k, k:]
+    return L, U
+def forward_suBstitution(L, B):
+    n = len(B)
+    y = np.zeros(n)
+    for i in range(n):
+        y[i] = (B[i] - np.dot(L[i, :i], y[:i]))/L[i][i]
+    return y
+def Backward_suBstitution(U, y):
+    n = len(y)
+    x = np.zeros(n)
+    for i in range(n-1, -1, -1):
+        x[i] = (y[i] - np.dot(U[i, i+1:], x[i+1:]))/U[i][i]
+    return x
+A = np.array([
+    [1, 2, 1],
+    [2, 1, 3],
+    [3, 1, 2]])
+B = np.array([8, 13, 12])
+L, U = lu_decomposition(A)
+y = forward_suBstitution(L, B)
+x = Backward_suBstitution(U, y)
+print("=== Penyelesaian Soal Nomor 3 ===")
+print("\nMatriks L:\n", L)
+print("\nMatriks U:\n", U)
+print("\nSolusi x, y, z =\n", x)
+#============== NOMOR 4 ============#
+import numpy as np
+
+# -------------------------
+# Fungsi LU Decomposition
+# -------------------------
+def lu_decomposition(A):
+    n = len(A)
+    L = np.zeros((n, n), float)
+    U = np.zeros((n, n), float)
+
+    # Inisialisasi
+    U[:, :] = A.copy()
+    for i in range(n):
+        L[i][i] = 1
+
+    # Proses eliminasi
+    for k in range(n):
+        for i in range(k+1, n):
+            factor = U[i][k] / U[k][k]
+            L[i][k] = factor
+            U[i, k:] -= factor * U[k, k:]
+
+    return L, U
+
+# -------------------------
+# Forward SuBstitution Ly = B
+# -------------------------
+def forward_suBstitution(L, B):
+    n = len(B)
+    y = np.zeros(n)
+
+    for i in range(n):
+        y[i] = (B[i] - np.dot(L[i, :i], y[:i]))/L[i][i]
+
+    return y
+
+# -------------------------
+# Backward SuBstitution Ux = y
+# -------------------------
+def Backward_suBstitution(U, y):
+    n = len(y)
+    x = np.zeros(n)
+
+    for i in range(n-1, -1, -1):
+        x[i] = (y[i] - np.dot(U[i, i+1:], x[i+1:]))/U[i][i]
+
+    return x
+
+# =======================
+# SOAL NOMOR 4
+# =======================
+
+A = np.array([
+    [1, 1, 1],
+    [2, 4, 2],
+    [-1, 3, 2]
+])
+
+B = np.array([6, 16, 9])
+
+# LU DECOMPOSITION
+L, U = lu_decomposition(A)
+
+# Forward & Backward SuBstitution
+y = forward_suBstitution(L, B)
+x = Backward_suBstitution(U, y)
+
+# OUTPUT
+print("=== Penyelesaian Soal Nomor 4 ===")
+print("\nMatriks L:\n", L)
+print("\nMatriks U:\n", U)
+print("\nSolusi x, y, z =\n", x)
